@@ -1,0 +1,149 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Oscar Nevarez",
+    "label": "Builder · AI agents, native apps and cloud platforms",
+    "email": "oscar@onevarez.com",
+    "url": "https://onevarez.dev",
+    "summary": "I've been shipping software for 20+ years, from serverless platforms and data pipelines to a native screen recorder and AI agents that run inside real operations. Most recently I led the team at Kamina GO (Grupo Traxión) that put AI document intelligence and an internal LLM agent into a business moving 5,000+ loads a day. Before that I was CTO at Prixz. These days I build with MCP servers, Claude Code plugins, computer-use and voice agents, Rust and Tauri.",
+    "location": {
+      "city": "Mexico City",
+      "countryCode": "MX",
+      "region": "CDMX"
+    },
+    "profiles": [
+      { "network": "GitHub", "username": "oscarnevarezleal", "url": "https://github.com/oscarnevarezleal" },
+      { "network": "LinkedIn", "username": "oscarnevarezleal", "url": "https://www.linkedin.com/in/oscarnevarezleal" },
+      { "network": "X", "username": "wownevarez", "url": "https://x.com/wownevarez" },
+      { "network": "Medium", "username": "oscar-nevarez", "url": "https://oscar-nevarez.medium.com/" },
+      { "network": "Codementor", "username": "fuwire", "url": "https://www.codementor.io/@fuwire" }
+    ]
+  },
+  "x-builder": {
+    "headline": "I build things that ship.",
+    "subhead": "AI agents in production, native desktop apps, and the cloud plumbing underneath them.",
+    "now": [
+      "Nullcolor: native screen and webcam recorder for macOS and Windows",
+      "Kineto: the open-source Rust composition engine behind it",
+      "Claude Code plugins and MCP servers for recording, reviewing and automating dev work"
+    ],
+    "stats": [
+      { "value": "20+", "label": "years shipping" },
+      { "value": "5,000+", "label": "daily loads on systems my team built" },
+      { "value": "179★", "label": "on gh-cms" }
+    ],
+    "companion": { "label": "Consulting & services", "url": "https://onevarez.com" }
+  },
+  "projects": [
+    {
+      "name": "Nullcolor",
+      "type": "product",
+      "status": "shipping",
+      "description": "Native macOS and Windows app that records screen and webcam together, with a built-in editor, 4K/60 MP4 export and a searchable recording library. Free for individuals, $99 commercial licence.",
+      "url": "https://nullcolor.app",
+      "keywords": ["native desktop", "macOS", "Windows", "Kineto"]
+    },
+    {
+      "name": "Kineto",
+      "type": "open source",
+      "status": "shipping",
+      "description": "The composition engine inside Nullcolor, open-sourced. A cross-platform Rust binary that gives a screen recording a cinematic treatment (background, padding, rounded corners, shadow, eased auto-zoom) on static FFmpeg, libx264 and libx265.",
+      "url": "https://github.com/onevarez/kineto-engine",
+      "keywords": ["Rust", "FFmpeg", "libx264", "libx265"]
+    },
+    {
+      "name": "So Record",
+      "type": "open source",
+      "status": "shipping",
+      "description": "Claude Code plugin that records Playwright browser sessions and renders them as cinematic videos, with a Rust session engine and a native exporter.",
+      "url": "https://github.com/oscarnevarezleal/so-record-plugin",
+      "keywords": ["Claude Code", "Playwright MCP", "Rust", "AVFoundation"]
+    },
+    {
+      "name": "Smart Document Router",
+      "type": "hackathon",
+      "status": "built",
+      "description": "Serverless classify, extract, embed and route pipeline for documents, with RAG chat on top.",
+      "url": "https://github.com/oscarnevarezleal/sdr-rag-hackathon",
+      "keywords": ["AWS Lambda", "Bedrock", "Textract", "pgvector", "CDK"]
+    },
+    {
+      "name": "gh-cms",
+      "type": "open source",
+      "status": "built",
+      "description": "A headless CMS where every GitHub Issue becomes a post, published with Hugo and GitHub Actions.",
+      "url": "https://github.com/oscarnevarezleal/gh-cms",
+      "keywords": ["GitHub Actions", "Hugo"]
+    },
+    {
+      "name": "q-web",
+      "type": "open source",
+      "status": "built",
+      "description": "A web interface for the Q CLI that keeps PTY processes alive and streams input and output to the browser.",
+      "url": "https://github.com/oscarnevarezleal/q-web",
+      "keywords": ["TypeScript", "PTY", "WebSockets"]
+    },
+    {
+      "name": "Laraboot",
+      "type": "open source",
+      "status": "built",
+      "description": "Buildpack-based toolchain for bootstrapping Laravel applications.",
+      "url": "https://github.com/oscarnevarezleal?tab=repositories&q=laraboot",
+      "keywords": ["Go", "Buildpacks", "PHP"]
+    }
+  ],
+  "work": [
+    {
+      "name": "Kamina GO (Grupo Traxión)",
+      "position": "Tech Lead Manager",
+      "location": "Mexico City",
+      "endDate": "2026-10",
+      "summary": "Freight marketplace and execution platform inside one of Mexico's largest logistics groups, running 5,000+ movements a day.",
+      "highlights": [
+        "Mobile proof-of-delivery capture with OCR and AI contextual extraction, feeding invoicing, reconciliation and payment follow-up.",
+        "Per-document model routing for varied POD and evidence layouts.",
+        "Multimedia evidence system that interprets audio, video and images with AI and feeds downstream systems.",
+        "Internal AI agent across datasets and APIs, used from Slack.",
+        "Multi-tenant analytics on Athena and Metabase."
+      ]
+    },
+    {
+      "name": "Prixz",
+      "position": "CTO",
+      "location": "Mexico City",
+      "summary": "Mexico's first native online pharmacy: dark-store fulfilment, own site and app, plus Amazon and Mercado Libre storefronts.",
+      "highlights": [
+        "Led engineering through the move from last-mile delivery provider to digital pharmacy.",
+        "Owned architecture, platform and hiring."
+      ]
+    },
+    {
+      "name": "ONE VAREZ",
+      "position": "Independent engineer",
+      "location": "Mexico City · remote",
+      "summary": "100+ client projects across software, data and AI.",
+      "highlights": [
+        "Serverless and container platforms with CDK, CloudFormation and buildpacks.",
+        "Data and document pipelines, from crawlers to extraction and analytics."
+      ]
+    }
+  ],
+  "skills": [
+    { "name": "AI & agents", "keywords": ["MCP servers", "Claude Code plugins", "Claude API", "computer use", "voice agents", "RAG", "pgvector", "model routing", "evals", "Bedrock"] },
+    { "name": "Languages", "keywords": ["Rust", "TypeScript", "Python", "Go", "PHP", "Swift"] },
+    { "name": "Cloud", "keywords": ["AWS Lambda", "Fargate", "S3", "DynamoDB", "Athena", "CDK", "GCP", "Cloudflare Workers", "Docker"] },
+    { "name": "Desktop & media", "keywords": ["Tauri", "FFmpeg", "AVFoundation", "Playwright"] }
+  ],
+  "publications": [
+    {
+      "name": "Decoupling Monoliths With Container Orchestration and Feature Flags",
+      "publisher": "LaunchDarkly blog",
+      "releaseDate": "2022-07-19",
+      "url": "https://launchdarkly.com/blog/decoupling-monoliths-with-container-orchestration-and-feature-flags/"
+    }
+  ],
+  "meta": {
+    "version": "2026-10-16",
+    "source": "Derived from https://github.com/oscarnevarezleal/resume (resume.json), reframed for a builder audience."
+  }
+}
