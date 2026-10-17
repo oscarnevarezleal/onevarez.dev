@@ -6,7 +6,8 @@ Builder profile for Oscar Nevarez: what I've shipped, what's running in producti
 
 - `content/profile.json` is the single source of truth. It follows the [JSON Resume](https://jsonresume.org/schema) schema, plus an `x-builder` block for builder-only bits (headline, "building now", stats).
 - `scripts/build.mjs` renders it into `index.html`. No dependencies.
-- `styles.css` holds all styling, with light and dark themes.
+- `styles.css` and `assets/app.js` add the **onevarez.swf** experience: a Flash-style preloader with SKIP INTRO, a particle headline that reacts to the cursor, and the projects reel driven by a Flash IDE-style timeline (scroll, drag the playhead or click a keyframe).
+- Without JS, or with reduced motion turned on, the page is plain readable HTML: no preloader, no particles, and the reel becomes a swipeable row.
 
 ```sh
 node scripts/build.mjs          # regenerate index.html after editing the JSON

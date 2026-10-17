@@ -1,4 +1,5 @@
 // Renders content/profile.json into index.html. No dependencies: `node scripts/build.mjs`.
+// The page is fully readable as plain HTML; assets/app.js layers the onevarez.swf experience on top.
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -10,40 +11,71 @@ const b = p["x-builder"];
 const esc = (s = "") =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const tags = (list = []) => `<ul class="tags">${list.map((k) => `<li>${esc(k)}</li>`).join("")}</ul>`;
-const ext = (url, text) => `<a href="${esc(url)}" rel="noopener">${text}</a>`;
+const ext = (url, text, cls = "") => `<a href="${esc(url)}" rel="noopener"${cls ? ` class="${cls}"` : ""}>${text}</a>`;
 const host = (url) => new URL(url).hostname.replace(/^www\./, "") + new URL(url).pathname.replace(/\/$/, "");
+const pad = (n) => String(n).padStart(3, "0");
 
-const projects = p.projects
+// Kineto-style backdrops, one per frame.
+const backdrops = [
+  ["#ff3d7f", "#ffb547"],
+  ["#7c3aed", "#22d3ee"],
+  ["#10b981", "#c6ff3d"],
+  ["#f43f5e", "#6366f1"],
+  ["#0ea5e9", "#a3e635"],
+  ["#f59e0b", "#ef4444"],
+  ["#8b5cf6", "#ec4899"],
+];
+const FRAMES_PER_SCENE = 12;
+
+const frames = p.projects
+  .map((x, i) => {
+    const [c1, c2] = backdrops[i % backdrops.length];
+    const frame = i * FRAMES_PER_SCENE + 1;
+    return `
+        <article class="frame" id="frame-${i + 1}" data-frame="${frame}" data-name="${esc(x.name)}" style="--c1:${c1};--c2:${c2}">
+          <div class="frame-meta"><span>FRAME ${pad(frame)}</span><span>${esc(x.type)} · ${esc(x.status)}</span></div>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>${esc(host(x.url))}</span></div>
+            <div class="window-body">
+              <h3>${ext(x.url, esc(x.name))}</h3>
+              <p>${esc(x.description)}</p>
+              ${tags(x.keywords)}
+              ${ext(x.url, "Open ↗", "open")}
+            </div>
+          </div>
+        </article>`;
+  })
+  .join("");
+
+const keyframes = p.projects
   .map(
-    (x) => `
-      <article class="card">
-        <header>
-          <h3>${ext(x.url, esc(x.name))}</h3>
-          <span class="badge badge-${esc(x.status)}">${esc(x.type)}</span>
-        </header>
-        <p>${esc(x.description)}</p>
-        ${tags(x.keywords)}
-        <p class="link">${ext(x.url, esc(host(x.url)) + " ↗")}</p>
-      </article>`
+    (x, i) =>
+      `<button class="key" type="button" data-index="${i}" style="--i:${i}" aria-label="Go to ${esc(x.name)}"><span>${esc(x.name)}</span></button>`
   )
   .join("");
 
 const work = p.work
   .map(
-    (w) => `
-      <article class="role">
-        <div class="role-head">
-          <h3>${esc(w.name)}</h3>
-          <span>${esc(w.position)}</span>
+    (w, i) => `
+      <article class="role reveal">
+        <div class="role-num">0${i + 1}</div>
+        <div>
+          <div class="role-head">
+            <h3>${esc(w.name)}</h3>
+            <span>${esc(w.position)}</span>
+          </div>
+          <p class="muted">${esc(w.summary)}</p>
+          <ul>${w.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
-        <p class="muted">${esc(w.summary)}</p>
-        <ul>${w.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
       </article>`
   )
   .join("");
 
+const allSkills = p.skills.flatMap((s) => s.keywords);
+const marquee = (list) => list.map((k) => `<span>${esc(k)}</span>`).join("<b aria-hidden=\"true\">✦</b>");
+
 const skills = p.skills
-  .map((s) => `<div class="stack-row"><h3>${esc(s.name)}</h3>${tags(s.keywords)}</div>`)
+  .map((s) => `<div class="stack-row reveal"><h3>${esc(s.name)}</h3>${tags(s.keywords)}</div>`)
   .join("");
 
 const writing = p.publications
@@ -78,18 +110,39 @@ const html = `<!doctype html>
   <meta property="og:description" content="${esc(b.subhead)}">
   <meta property="og:url" content="${esc(p.basics.url)}">
   <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2310b981'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='%230b0d10'%3Eo/%3C/text%3E%3C/svg%3E">
+  <meta name="theme-color" content="#07070a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23c6ff3d'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='%2307070a'%3Eo/%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Space+Grotesk:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Opt into the motion layer before first paint so there is no flash of the plain layout.
+    (function () {
+      var d = document.documentElement;
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("fx");
+      try { if (sessionStorage.getItem("swf-seen")) d.classList.add("seen"); } catch (e) {}
+    })();
+  </script>
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+
+  <div id="preloader" aria-hidden="true">
+    <div class="pl-inner">
+      <div class="pl-file">onevarez.swf</div>
+      <div class="pl-count"><span id="pl-num">0</span><small>%</small></div>
+      <div class="pl-bar"><i id="pl-fill"></i></div>
+      <div class="pl-log" id="pl-log">loading assets…</div>
+    </div>
+    <button type="button" class="pl-skip" id="pl-skip">[ SKIP INTRO ]</button>
+  </div>
+
   <header class="top">
-    <a class="logo" href="/">onevarez<span>.dev</span></a>
+    <a class="logo" href="#main">onevarez<span>.dev</span></a>
     <nav>
-      <a href="#shipped">Shipped</a>
+      <a href="#reel">Shipped</a>
       <a href="#production">In production</a>
       <a href="#stack">Stack</a>
       <a href="#contact">Contact</a>
@@ -97,59 +150,82 @@ const html = `<!doctype html>
   </header>
 
   <main id="main">
-    <section class="hero">
-      <p class="eyebrow">${esc(p.basics.name)} · ${esc(p.basics.location.city)}</p>
-      <h1>${esc(b.headline)}</h1>
-      <p class="lede">${esc(b.subhead)}</p>
-      <p>${esc(p.basics.summary)}</p>
-      <div class="cta">
-        <a class="btn" href="mailto:${esc(p.basics.email)}">Email me</a>
-        <a class="btn btn-ghost" href="${esc(p.basics.profiles[0].url)}" rel="noopener">GitHub ↗</a>
+    <section class="hero" id="hero">
+      <canvas id="particles" aria-hidden="true"></canvas>
+      <div class="hero-copy">
+        <p class="eyebrow">${esc(p.basics.name)} · ${esc(p.basics.location.city)}</p>
+        <h1 id="headline">${esc(b.headline)}</h1>
+        <p class="lede">${esc(b.subhead)}</p>
+        <div class="cta">
+          <a class="btn" href="#reel">Play the reel ▶</a>
+          <a class="btn btn-ghost" href="mailto:${esc(p.basics.email)}">Email me</a>
+        </div>
       </div>
+      <div class="hero-hint" aria-hidden="true"><span class="cursor-only">move your cursor · </span>scroll to play</div>
+    </section>
+
+    <section class="intro">
+      <p class="big reveal">${esc(p.basics.summary)}</p>
       <dl class="stats">
-        ${b.stats.map((s) => `<div><dt>${esc(s.label)}</dt><dd>${esc(s.value)}</dd></div>`).join("")}
+        ${b.stats.map((s) => `<div class="reveal"><dd data-count="${esc(s.value)}">${esc(s.value)}</dd><dt>${esc(s.label)}</dt></div>`).join("")}
       </dl>
-    </section>
-
-    <section class="now" aria-labelledby="now-h">
-      <h2 id="now-h"><span class="dot" aria-hidden="true"></span>Building now</h2>
-      <ul>${b.now.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-    </section>
-
-    <section id="shipped" aria-labelledby="shipped-h">
-      <h2 id="shipped-h">Shipped</h2>
-      <p class="muted">Products, open source and experiments I've built and put out in the world.</p>
-      <div class="grid">${projects}
+      <div class="now reveal">
+        <h2><span class="dot" aria-hidden="true"></span>Building now</h2>
+        <ul>${b.now.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
       </div>
     </section>
+
+    <section id="reel" class="reel" aria-labelledby="reel-h" style="--scenes:${p.projects.length}">
+      <div class="reel-pin">
+        <div class="reel-head">
+          <h2 id="reel-h">Shipped</h2>
+          <p class="muted">Products, open source and experiments. Scroll, drag the playhead or pick a keyframe.</p>
+        </div>
+        <div class="track" id="track">${frames}
+        </div>
+        <div class="timeline" id="timeline" style="--frames:${p.projects.length * FRAMES_PER_SCENE}">
+          <div class="tl-label">Scene 1 · Layer: work</div>
+          <div class="tl-body" id="tl-body">
+            <div class="ruler" id="ruler" aria-hidden="true"></div>
+            <div class="keys">${keyframes}</div>
+            <div class="playhead" id="playhead" aria-hidden="true"><span id="ph-num">001</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div>${marquee(allSkills)}<b>✦</b>${marquee(allSkills)}<b>✦</b></div></div>
 
     <section id="production" aria-labelledby="production-h">
-      <h2 id="production-h">In production</h2>
-      <p class="muted">Systems I've built or led inside companies, running on real traffic.</p>
+      <h2 id="production-h" class="reveal">In production</h2>
+      <p class="muted reveal">Systems I've built or led inside companies, running on real traffic.</p>
       ${work}
     </section>
 
     <section id="stack" aria-labelledby="stack-h">
-      <h2 id="stack-h">Stack</h2>
+      <h2 id="stack-h" class="reveal">Stack</h2>
       ${skills}
     </section>
 
     <section id="writing" aria-labelledby="writing-h">
-      <h2 id="writing-h">Writing</h2>
-      <ul class="plain">${writing}</ul>
+      <h2 id="writing-h" class="reveal">Writing</h2>
+      <ul class="plain reveal">${writing}</ul>
     </section>
 
     <section id="contact" class="contact" aria-labelledby="contact-h">
-      <h2 id="contact-h">Let's build something</h2>
-      <p>Open to AI engineering leadership roles and to building with teams who ship. For consulting and services, see ${ext(b.companion.url, esc(host(b.companion.url)))}.</p>
-      <p><a class="btn" href="mailto:${esc(p.basics.email)}">${esc(p.basics.email)}</a></p>
-      <ul class="links">${links}</ul>
+      <h2 id="contact-h" class="shout" data-text="LET'S BUILD">LET'S BUILD</h2>
+      <p class="reveal">Open to AI engineering leadership roles and to building with teams who ship. For consulting and services, see ${ext(b.companion.url, esc(host(b.companion.url)))}.</p>
+      <p class="reveal"><a class="btn" href="mailto:${esc(p.basics.email)}">${esc(p.basics.email)}</a></p>
+      <ul class="links reveal">${links}</ul>
     </section>
   </main>
 
   <footer class="foot">
     <p>© ${new Date().getFullYear()} ${esc(p.basics.name)} · ${ext(b.companion.url, esc(host(b.companion.url)))}</p>
+    <p class="muted">No Flash Player required.</p>
   </footer>
+
+  <script src="assets/app.js" defer></script>
 </body>
 </html>
 `;
